@@ -1,0 +1,113 @@
+<launch>
+    <arg name="model" />
+    <arg name="gui" default="false" />
+
+    <param name="use_sim_time" value="false"/>
+    <param name="robot_description" textfile="$(find robot_simulation)/urdf/robot_description.urdf" />
+    <param name="use_gui" value="$(
+arg gui)" />
+
+    <node pkg="drive_simulation" type="drive_simulation_node" name="simul_driver" >
+      <remap from="/simul_driver/cmd_vel" to="cmd_vel" />
+      <remap from="/simul_driver/odom" to="odom" />
+    </node>
+
+    <node pkg="map_server" type="map_server" name="map_server" args="$(find simulation_launch)/map/map4.yaml" />
+    <node pkg="map_server" type="map_server" name="map_server1" args="$(find simulation_launch)/map/inside.yaml">
+      <remap from="/map" to="real_map"  />
+    </node>
+
+    <node pkg="lidar_simulation" type="lidar_simulation" name="simul_lidar" output="screen">
+      <param name="min_angle"  value="-2.35619448975"/>
+      <param name="max_angle"  value="2.35619448975" />
+      <param name="min_distance" value="0.15" />
+      <param name="max_distance" value="8.00" />
+      <param name="size" value="271"/>
+      <param name="rate" value="15"/>
+      <param name="global_frame" value="odom"/>
+      <param name="lidar_frame" value="lidar"/>
+    </node>
+
+    <node pkg="amcl" type="amcl" name="global_localization" output="screen">
+      <param name="use_map_topic"             value="false"/>
+      <param name="first_map_only"             value="true"/>
+      <param name="odom_model_type"           value="diff"/>
+      <param name="gui_publish_rate"          value="10.0"/>
+      <param name="laser_max_beams"           value="60"/>
+      <param name="laser_min_range"           value="0.2"/>
+      <param name="laser_max_range"           value="6.0"/>
+      <param name="min_particles"             value="500"/>
+      <param name="max_particles"             value="2000"/>
+      <param name="kld_err"                   value="0.02"/>
+      <param name="kld_z"                     value="0.99"/>
+      <param name="odom_alpha1"               value="0.2"/>
+      <param name="odom_alpha2"               value="0.2"/>
+      <param name="odom_alpha3"               value="0.2"/>
+      <param name="odom_alpha4"               value="0.2"/>
+      <param name="laser_z_hit"               value="0.95"/>
+      <param name="laser_z_short"             value="0.025"/>
+      <param name="laser_z_max"               value="0.025"/>
+      <param name="laser_z_rand"              value="0.05"/>
+      <param name="laser_sigma_hit"           value="0.2"/>
+      <param name="laser_lambda_short"        value="0.1"/>
+      <param name="laser_model_type"          value="likelihood_field"/>
+      <param name="laser_likelihood_max_dist" value="2.0"/>
+      <param name="update_min_d"              value="0.25"/>
+      <param name="update_min_a"              value="0.2"/>
+      <param name="odom_frame_id"             value="odom"/>
+      <param name="base_frame_id"             value="base_link"/>
+      <param name="global_frame_id"           value="map"/>
+      <param name="resample_interval"         value="3"/>
+      <param name="transform_tolerance"       value="0.5"/>
+      <param name="recovery_alpha_slow"       value="0.001"/>   
+      <param name="recovery_alpha_fast"       value="0.3"/>
+      <param name="initial_pose_x"            value="0.0"/>
+      <param name="initial_pose_y"            value="0.0"/>
+      <param name="initial_pose_a"            value="0.0"/>      
+      <param name="initial_cov_xx"            value="0.0"/>
+      <param name="initial_cov_yy"            value="0.0"/>
+      <param name="initial_cov_aa"            value="0.0"/>
+    </node>
+
+    <node pkg="move_base" type="move_base" respawn="false" name="motion_planning" output="screen">
+        <rosparam file="$(find simulation_launch)/param/move_base_params.yaml" command="load" />
+        <rosparam file="$(find simulation_launch)/param/global_costmap_params.yaml" command="load" ns="global_costmap"/>
+        <rosparam file="$(find simulation_launch)/param/local_costmap_params.yaml" command="load" ns="local_costmap"/>
+        <rosparam file="$(find simulation_launch)/param/global_planner_params.yaml" command="load" ns="GlobalPlanner"/>
+        <rosparam file="$(find simulation_launch)/param/dwa_local_planner_params.yaml" command="load" ns="DWAPlannerROS"/>
+    </node>
+
+    <!--node name="obstacle_simulation" pkg="lidar_simulation" type="obstacle_simulation" output="screen">
+        <param name="obstacle_id" value="obstacle" />
+        <param name="inter_marker_id" value="map" />
+        <param name="resolution" value="0.05" />
+        <rosparam param="obstacle_footprints">[[0.1,1.2, 0.1,-1.2, -0.1,-1.2, -0.1,1.2]]</rosparam>
+    </node-->
+
+    <node name="box" pkg="lidar_simulation" type="obstacle_simulation" output="screen">
+        <param name="obstacle_id" value="obstacle_box" />
+        <param name="inter_marker_id" value="map" />
+        <param name="resolution" value="0.05" />
+        <rosparam param="obstacle_footprints">[[0.0,0.0, 0.,0.5, 0.5,0.5, 0.5,0.0]]</rosparam>
+    </node>
+
+    <node name="triangle" pkg="lidar_simulation" type="obstacle_simulation" output="screen">
+        <param name="obstacle_id" value="obstacle_triangle" />
+        <param name="inter_marker_id" value="map" />
+        <param name="resolution" value="0.05" />
+        <rosparam param="obstacle_footprints">[[0.0,0.0, 0.0,0.5, 0.5,0.0]]</rosparam>
+    </node>
+
+        <node name="circle" pkg="lidar_simulation" type="obstacle_simulation" output="screen">
+        <param name="obstacle_id" value="obstacle_circle" />
+        <param name="inter_marker_id" value="map" />
+        <param name="resolution" value="0.05" />
+        <rosparam param="obstacle_footprints">[[0.0,0.0, 0.,0.5, 0.3,0.3, 0.5,0.0, 0.3,-0.3, 0.0,-0.5]]</rosparam>
+    </node>
+
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_simulation)/urdf.rviz" />
+
+    <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.34 0.0 0.10 0.0 0.0 0.0 /base_link /lidar 10" />
+</launch>

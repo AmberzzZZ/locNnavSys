@@ -1,0 +1,31 @@
+<launch>
+  <arg name="model" />
+  <arg name="gui" default="false" />
+
+  <param name="robot_description" textfile="$(find robot_simulation)/urdf/robot_description.urdf" />
+  <param name="use_gui" value="$(arg gui)" />
+
+  <node pkg="drive_simulation" type="drive_simulation_node" name="simul_driver" >
+    <remap from="/simul_driver/cmd_vel" to="cmd_vel" />
+    <remap from="/simul_driver/odom" to="odom" />
+  </node>
+
+  <node pkg="map_server" type="map_server" name="map_server" args="$(find lidar_simulation)/map/custom.yaml"/>
+
+  <node pkg="lidar_simulation" type="lidar_simulation" name="simul_lidar" output="screen">
+      <param name="min_angle"  value="-2.35619448975"/>
+      <param name="max_angle"  value="2.35619448975" />
+      <param name="min_distance" value="0.15" />
+      <param name="max_distance" value="8.00" />
+      <param name="size" value="271"/>
+      <param name="rate" value="15"/>
+  </node>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0.0 0.0 0.0 0.0 0.0 0.0 /map /odom 10" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.34 0.0 0.10 0.0 0.0 0.0 /base_link /lidar 10" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_simulation)/urdf.rviz" />
+</launch>
+
