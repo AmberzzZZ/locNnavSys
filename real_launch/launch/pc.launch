@@ -1,0 +1,5 @@
+<launch>
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find real_launch)/realUI.rviz" >
+      <!--remap from="/goal" to="/navigation_simple/goal" /-->
+    </node>
+</launch>

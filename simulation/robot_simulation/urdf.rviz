@@ -100,9 +100,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 1.59399891
+      Max Intensity: 6.46783924
       Min Color: 0; 0; 0
-      Min Intensity: -2.59097457
+      Min Intensity: -0.983294606
       Name: LaserScan
       Position Transformer: XYZ
       Queue Size: 10
@@ -171,7 +171,7 @@ Visualization Manager:
       Radius: 0.0299999993
       Shaft Diameter: 0.100000001
       Shaft Length: 0.100000001
-      Topic: /motion_planning/DWAPlannerROS/global_plan
+      Topic: /motion_planning/GlobalPlanner/plan
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -217,7 +217,7 @@ Visualization Manager:
     - Class: rviz/Interact
       Hide Inactive Objects: true
     - Class: rviz/SetGoal
-      Topic: goal
+      Topic: /navigation_simple/goal
     - Class: rviz/SetInitialPose
       Topic: initialpose
     - Class: rviz/PublishPoint

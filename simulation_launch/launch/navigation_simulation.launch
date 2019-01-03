@@ -108,7 +108,7 @@ arg gui)" />
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot_simulation)/urdf.rviz" >
-      <remap from="/goal" to="/navigation_simple/goal" />
+      <!--remap from="/goal" to="/navigation_simple/goal" /-->
     </node>
 
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.34 0.0 0.10 0.0 0.0 0.0 /base_link /lidar 10" />
